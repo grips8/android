@@ -1,0 +1,21 @@
+FROM ubuntu:22.04
+
+RUN apt -y update && apt install tzdata -y
+ENV TZ="Europe/Warsaw"
+RUN apt -y install software-properties-common
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get -y update
+RUN apt-get -y -qq install \
+		python3.8 \
+		openjdk-8-jdk \
+		curl \
+		unzip \
+		zip
+RUN curl -s "https://get.sdkman.io" | bash
+RUN /bin/bash -c "source $HOME/.sdkman/bin/sdkman-init.sh; sdk version; sdk install kotlin; sdk install gradle"
+
+ENV PATH=$PATH:/root/.sdkman/candidates/gradle/7.5.1/bin
+
+COPY ./proj /root/proj/
+
+CMD ["gradle","run","-p","/root/proj/app"]
