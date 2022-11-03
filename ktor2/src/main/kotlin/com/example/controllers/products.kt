@@ -9,27 +9,61 @@ import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.products() {
-    get("/products") {
-        val products = transaction { Product.all() }
-        val productsJson: MutableList<ProductJson> = arrayListOf()
-        transaction {
-            products.forEach {
-                productsJson.add(ProductJson(it))
+    route("/products") {
+        get() {
+            val products = transaction { Product.all() }
+            val productsJson: MutableList<ProductJson> = arrayListOf()
+            transaction {
+                products.forEach {
+                    productsJson.add(ProductJson(it))
+                }
+            }
+            call.respond(productsJson)
+        }
+        get("/{id}") {
+            val product = transaction { Product.findById(call.parameters["id"]!!.toInt())}
+            if (product == null) {
+                call.respondText { "Error: no product with requested ID." }
+            } else {
+                call.respond(ProductJson(product))
             }
         }
-        call.respond(productsJson)
-    }
-
-    post("/addproduct") {
-        val productJson = call.receive<ProductJson>()
-        transaction {
-            Product.new {
-                title = productJson.title
-                price = productJson.price
-                categoryID = productJson.categoryID
+        put("/update/{id}") {
+            val product = transaction { Product.findById(call.parameters["id"]!!.toInt()) }
+            if (product == null) {
+                call.respondText("Error: no product with requested ID.")
+            } else {
+                val productJson = call.receive<ProductJson>()
+                transaction {
+                    product.title = productJson.title
+                    product.price = productJson.price
+                    product.categoryID = productJson.categoryID
+                }
+                call.respondText("Successfully updated the product.")
             }
         }
-        call.respondText("Successfully added the product. =)")
+        delete("/delete/{id}") {
+            val product = transaction { Product.findById(call.parameters["id"]!!.toInt()) }
+            if (product == null) {
+                call.respondText("Error: no product with requested ID.")
+            } else {
+                transaction {
+                    product.delete()
+                }
+                call.respondText("Successfully deleted the product.")
+            }
+        }
+        post("/add") {
+            val productJson = call.receive<ProductJson>()
+            transaction {
+                Product.new {
+                    title = productJson.title
+                    price = productJson.price
+                    categoryID = productJson.categoryID
+                }
+            }
+            call.respondText("Successfully added the product. =)")
+        }
     }
 }
 

@@ -11,7 +11,7 @@ object Products : IntIdTable() {
 //    val id = integer("id").autoIncrement() // Column<Int>
     val title = varchar("title", 50) // Column<String>
     val price = integer("price") // Column<Int>
-    val categoryID = integer("categoryID") // Column<Int>
+    val categoryID = integer("categoryID").references(Categories.id) // Column<Int>
 //
 //    override val primaryKey = PrimaryKey(id, name = "PK_Products_ID")
 }

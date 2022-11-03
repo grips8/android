@@ -1,6 +1,8 @@
 package com.example
 
+import com.example.controllers.categoriesRoutes
 import com.example.controllers.customerRoutes
+import com.example.models.Categories
 import com.example.models.Products
 import io.ktor.server.application.*
 import com.example.plugins.*
@@ -28,7 +30,9 @@ fun Application.module() {
 
     transaction {
         SchemaUtils.create(Products)
+        SchemaUtils.create(Categories)
     }
 
+    categoriesRoutes()
     customerRoutes()
 }

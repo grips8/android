@@ -9,28 +9,64 @@ import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.categories() {
-    get("/categories") {
-        val categories = transaction { Category.all() }
-        val categoriesJson: MutableList<CategoryJson> = arrayListOf()
-        transaction {
-            categories.forEach {
-                categoriesJson.add(CategoryJson(it))
+    route("/categories") {
+        get() {
+            val categories = transaction { Category.all() }
+            val categoriesJson: MutableList<CategoryJson> = arrayListOf()
+            transaction {
+                categories.forEach {
+                    categoriesJson.add(CategoryJson(it))
+                }
+            }
+            call.respond(categoriesJson)
+        }
+        get("/{id}") {
+            val category = transaction { Category.findById(call.parameters["id"]!!.toInt())}
+            if (category == null) {
+                call.respondText { "Error: no category with requested ID." }
+            } else {
+                call.respond(CategoryJson(category))
             }
         }
-        call.respond(categoriesJson)
+        put("/update/{id}") {
+            val category = transaction { Category.findById(call.parameters["id"]!!.toInt()) }
+            if (category == null) {
+                call.respondText("Error: no category with requested ID.")
+            } else {
+                val categoryJson = call.receive<CategoryJson>()
+                transaction {
+                    category.name = categoryJson.name
+                    category.tax = categoryJson.tax
+                    category.exclusiveness = categoryJson.exclusiveness
+                }
+                call.respondText("Successfully updated the category.")
+            }
+        }
+        delete("/delete/{id}") {
+            val category = transaction { Category.findById(call.parameters["id"]!!.toInt()) }
+            if (category == null) {
+                call.respondText("Error: no category with requested ID.")
+            } else {
+                transaction {
+                    category.delete()
+                }
+                call.respondText("Successfully deleted the category.")
+            }
+        }
+
+        post("/add") {
+            val categoryJson = call.receive<CategoryJson>()
+            transaction {
+                Category.new {
+                    name = categoryJson.name
+                    tax = categoryJson.tax
+                    exclusiveness = categoryJson.exclusiveness
+                }
+            }
+            call.respondText("Successfully added the category. =)")
+        }
     }
 
-    post("/addcategory") {
-        val categoryJson = call.receive<CategoryJson>()
-        transaction {
-            Category.new {
-                name = categoryJson.name
-                tax = categoryJson.tax
-                exclusiveness = categoryJson.exclusiveness
-            }
-        }
-        call.respondText("Successfully added the product. =)")
-    }
 }
 
 fun Application.categoriesRoutes() {
