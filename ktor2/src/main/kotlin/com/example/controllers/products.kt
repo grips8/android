@@ -2,7 +2,9 @@ package com.example.controllers
 
 import com.example.models.Product
 import com.example.models.ProductJson
+import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -64,6 +66,25 @@ fun Route.products() {
             }
             call.respondText("Successfully added the product. =)")
         }
+        // testing of custom headers with CORS
+//        get("/test"){
+//            val a =  call.request.headers["keyTest"]
+//            println(a)
+//            val product = transaction { Product.findById(a!!.toInt())}
+//            if (product == null) {
+//                call.respondText { "Error: no product with requested ID." }
+//            } else {
+//                call.respond(ProductJson(product))
+//            }
+//        }
+    }
+    host("sub1.localhost") {
+        static("/static") {
+            resources("files")
+        }
+    }
+    static("/static2") {
+        resources("files")
     }
 }
 

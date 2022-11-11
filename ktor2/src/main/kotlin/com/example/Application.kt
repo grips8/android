@@ -9,6 +9,7 @@ import com.example.plugins.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.cors.routing.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -21,9 +22,6 @@ fun Application.module() {
     configureHTTP()
     configureSerialization()
     configureRouting()
-//    install(ContentNegotiation) {
-//        json()
-//    }
 
     Database.connect("jdbc:sqlite:./data.db", "org.sqlite.JDBC")
 

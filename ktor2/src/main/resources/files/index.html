@@ -1,0 +1,18 @@
+<!DOCTYPE html>    
+<html>    
+<body>    
+<h2>HTML Iframes example</h2>    
+<p>Use the height and width attributes to specify the size of the iframe:</p>    
+<iframe src="http://sub1.localhost:8080/static/FeelsGoodMan.png" height="300" width="400"></iframe>   
+<script>
+//fetch('http://localhost:8080/products/test', { headers: { "key": "2" }})
+//   .then(response => response.json())
+//   .then(json => {    
+//     console.log(json);
+//   })
+var xhr = new XMLHttpRequest();
+xhr.open('DELETE', 'http://localhost:8080/products/delete/2');
+xhr.send()
+</script> 
+</body>    
+</html> 
