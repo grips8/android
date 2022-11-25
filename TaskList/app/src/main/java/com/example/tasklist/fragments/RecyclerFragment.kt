@@ -5,11 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tasklist.R
 import com.example.tasklist.adapters.TaskAdapter
+import com.example.tasklist.interfaces.RecyclerRowInterface
 import com.example.tasklist.models.DataTask
 
 /**
@@ -17,7 +20,8 @@ import com.example.tasklist.models.DataTask
  * Use the [RecyclerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class RecyclerFragment : Fragment() {
+class RecyclerFragment : Fragment(), RecyclerRowInterface {
+    private lateinit var adapter: TaskAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +54,7 @@ class RecyclerFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.fragment_recycler, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(view.context)
-        val adapter: TaskAdapter = TaskAdapter(data)
+        adapter = TaskAdapter(data, this)
         recyclerView.adapter = adapter
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             override fun onMove(
@@ -70,6 +74,14 @@ class RecyclerFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
         return view
+    }
+
+    override fun onClick(position: Int) {
+        val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragment_container_view, RowDetailsFragment(adapter.getTaskData(position)), "second fragment")
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
 }

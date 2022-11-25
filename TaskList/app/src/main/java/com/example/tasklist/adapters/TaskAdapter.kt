@@ -7,10 +7,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tasklist.models.DataTask
 import com.example.tasklist.R
 import com.example.tasklist.databinding.TaskRowItemBinding
+import com.example.tasklist.interfaces.RecyclerRowInterface
 
-class TaskAdapter(private val dataSet: MutableList<DataTask>) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+class TaskAdapter(private val dataSet: MutableList<DataTask>, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
 
-    class ViewHolder(private val binding: TaskRowItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: TaskRowItemBinding, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                val position: Int = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    recyclerRowInterface.onClick(position)
+                }
+            }
+        }
         fun bind(dataTask: DataTask) {
             binding.model = dataTask
         }
@@ -19,7 +28,7 @@ class TaskAdapter(private val dataSet: MutableList<DataTask>) : RecyclerView.Ada
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: TaskRowItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context),
             R.layout.task_row_item, parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(binding, recyclerRowInterface)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -34,5 +43,9 @@ class TaskAdapter(private val dataSet: MutableList<DataTask>) : RecyclerView.Ada
     fun delete(int: Int) {
         dataSet.removeAt(int)
         notifyItemRemoved(int)
+    }
+
+    fun getTaskData(int: Int) : DataTask {
+        return dataSet[int]
     }
 }
