@@ -8,7 +8,7 @@ import com.example.tasklist.models.DataTask
 import com.example.tasklist.R
 import com.example.tasklist.databinding.TaskRowItemBinding
 
-class TaskAdapter(private val dataSet: Array<DataTask>) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+class TaskAdapter(private val dataSet: MutableList<DataTask>) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
 
     class ViewHolder(private val binding: TaskRowItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(dataTask: DataTask) {
@@ -29,5 +29,10 @@ class TaskAdapter(private val dataSet: Array<DataTask>) : RecyclerView.Adapter<T
 
     override fun getItemCount(): Int {
         return dataSet.size
+    }
+
+    fun delete(int: Int) {
+        dataSet.removeAt(int)
+        notifyItemRemoved(int)
     }
 }

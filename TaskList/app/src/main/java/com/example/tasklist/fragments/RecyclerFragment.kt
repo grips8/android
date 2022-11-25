@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tasklist.R
@@ -22,7 +23,7 @@ class RecyclerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val data: Array<DataTask> = arrayOf(
+        val data: MutableList<DataTask> = mutableListOf(
             DataTask("name1", "desc1", "24.01.1999", "status1"),
             DataTask("name2", "desc2", "25.01.1999", "status2"),
             DataTask("name3", "desc3", "26.01.1999","status3"),
@@ -49,7 +50,25 @@ class RecyclerFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.fragment_recycler, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(view.context)
-        recyclerView.adapter = TaskAdapter(data)
+        val adapter: TaskAdapter = TaskAdapter(data)
+        recyclerView.adapter = adapter
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                adapter.delete(viewHolder.adapterPosition)
+            }
+
+        }
+        val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
         return view
     }
 
