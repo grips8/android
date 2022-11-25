@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.example.tasklist.R
 import com.example.tasklist.databinding.FragmentRowDetailsBinding
 import com.example.tasklist.models.DataTask
 
-class RowDetailsFragment(private val dataTask: DataTask) : Fragment() {
+class RowDetailsFragment(private val dataTask: DataTask) : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

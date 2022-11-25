@@ -77,11 +77,9 @@ class RecyclerFragment : Fragment(), RecyclerRowInterface {
     }
 
     override fun onClick(position: Int) {
-        val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
-        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_container_view, RowDetailsFragment(adapter.getTaskData(position)), "second fragment")
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
+        val dialog = RowDetailsFragment(adapter.getTaskData(position))
+
+        dialog.show(parentFragmentManager, "tag xd")
     }
 
 }
