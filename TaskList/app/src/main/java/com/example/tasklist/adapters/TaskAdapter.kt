@@ -1,5 +1,6 @@
 package com.example.tasklist.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -8,8 +9,11 @@ import com.example.tasklist.models.DataTask
 import com.example.tasklist.R
 import com.example.tasklist.databinding.TaskRowItemBinding
 import com.example.tasklist.interfaces.RecyclerRowInterface
+import com.example.tasklist.utils.DBHelper
 
-class TaskAdapter(private val dataSet: MutableList<DataTask>, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+class TaskAdapter(context: Context, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+    private val dbHelper = DBHelper(context)
+    private val dataSet = dbHelper.getAllTasks()
 
     class ViewHolder(private val binding: TaskRowItemBinding, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.ViewHolder(binding.root) {
         init {
@@ -41,6 +45,7 @@ class TaskAdapter(private val dataSet: MutableList<DataTask>, private val recycl
     }
 
     fun delete(int: Int) {
+        dbHelper.deleteTask(dataSet[int].id)
         dataSet.removeAt(int)
         notifyItemRemoved(int)
     }
