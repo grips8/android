@@ -9,5 +9,5 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 class Basket : RealmObject {
     @PrimaryKey
     val _id: ObjectId = ObjectId.create()
-    val products: RealmList<Product> = realmListOf()
+    val products: RealmList<BasketProduct> = realmListOf()
 }

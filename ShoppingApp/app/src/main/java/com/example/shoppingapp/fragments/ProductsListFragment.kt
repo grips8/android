@@ -21,7 +21,7 @@ class ProductsListFragment : Fragment(), RecyclerRowInterface {
         savedInstanceState: Bundle?
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_products_list, container, false)
-        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
+        val recyclerView: RecyclerView = view.findViewById(R.id.productRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
         val adapter = ProductAdapter(this)
         recyclerView.adapter = adapter

@@ -3,7 +3,7 @@
     <data>
         <variable
             name="model"
-            type="com.example.shoppingapp.models.Product" />
+            type="com.example.shoppingapp.models.BasketProduct" />
     </data>
     <androidx.cardview.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -19,20 +19,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
-                android:id="@+id/productNameTextView"
+                android:id="@+id/bProductNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="30sp"
-                android:text="@{model.name}"
+                android:text="@{model.product.name}"
                 card_view:layout_constraintTop_toTopOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"/>
             <TextView
-                android:id="@+id/productPriceTextView"
+                android:id="@+id/bProductPriceTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:text="@{Double.toString(model.price)}"
-                card_view:layout_constraintTop_toBottomOf="@+id/productNameTextView"
+                android:text="@{Double.toString(model.product.price)}"
+                card_view:layout_constraintTop_toBottomOf="@+id/bProductNameTextView"
                 card_view:layout_constraintStart_toStartOf="parent"
                 android:backgroundTint="@color/cardview_dark_background"/>
             <TextView
@@ -40,15 +40,33 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text=" PLN"
-                card_view:layout_constraintTop_toBottomOf="@+id/productNameTextView"
-                card_view:layout_constraintStart_toEndOf="@+id/productPriceTextView"/>
+                card_view:layout_constraintTop_toBottomOf="@+id/bProductNameTextView"
+                card_view:layout_constraintStart_toEndOf="@+id/bProductPriceTextView"/>
             <ImageButton
-                android:id="@+id/productAddToBasketButton"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:id="@+id/bProductRemoveQty"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                card_view:layout_constraintTop_toTopOf="@id/bProductAddQty"
+                card_view:layout_constraintEnd_toStartOf="@id/bProductQty"
+                android:src="@drawable/remove"
+/>
+            <TextView
+                android:id="@+id/bProductQty"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:text="@{Integer.toString(model.quantity)}"
+                android:background="@color/gray"
+                card_view:layout_constraintTop_toTopOf="@+id/bProductAddQty"
+                card_view:layout_constraintEnd_toStartOf="@+id/bProductAddQty"/>
+            <ImageButton
+                android:id="@+id/bProductAddQty"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintEnd_toEndOf="parent"
-                android:src="@drawable/basket"
+                android:src="@drawable/add"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>

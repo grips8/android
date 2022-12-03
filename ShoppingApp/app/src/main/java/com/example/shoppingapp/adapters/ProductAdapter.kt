@@ -31,19 +31,11 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
             name = "product4"
             price = 37.0
             description = "lorem ipsum dolor sit amet consectuar"
-        },
+        }
 
         )
 
     class ViewHolder(val binding: ProductRowItemBinding, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.ViewHolder(binding.root) {
-//        init {
-//            binding.root.setOnClickListener {
-//                val position: Int = adapterPosition
-//                if (position != RecyclerView.NO_POSITION) {
-//                    recyclerRowInterface.onClick(position)
-//                }
-//            }
-//        }
         fun bind(product: Product) {
             binding.model = product
         }
