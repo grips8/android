@@ -2,8 +2,10 @@
 
 ### **Changelog:**  
 * Zadanie nr 5:  
+  - 01.12.2022 - lista produktow z podstrona w osobnym activity 3.0
+  - 13.12.2022 - wszystkie funkcjonalnosci na 5.0
 * Zadanie nr 6:  
-  - 28.11.2022 - dodanie modeli z relacjami na 5.0 (Product, Category, Basket)  
+  - 28.11.2022 - dodanie modeli z relacjami na 4.0* (Product, Category, Basket) (*przed zmiana tresci zadania na 5.0) 
 * Zadanie nr 7:  
 * Zadanie nr 8:  
 * Zadanie nr 9:  
