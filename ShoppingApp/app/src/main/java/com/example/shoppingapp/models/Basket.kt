@@ -8,6 +8,6 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 class Basket : RealmObject {
     @PrimaryKey
-    val _id: ObjectId = ObjectId.create()
-    val products: RealmList<BasketProduct> = realmListOf()
+    var _id: String = ObjectId.create().toString()
+    var products: RealmList<BasketProduct> = realmListOf()
 }

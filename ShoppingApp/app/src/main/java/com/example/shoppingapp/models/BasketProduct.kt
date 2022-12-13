@@ -6,7 +6,7 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 class BasketProduct : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId.create()
+    var _id: String = ObjectId.create().toString()
     var product: Product? = null
     var quantity: Int = 1
 }

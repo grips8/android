@@ -1,39 +1,37 @@
 package com.example.shoppingapp.adapters
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.app.Service
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.databinding.ProductRowItemBinding
 import com.example.shoppingapp.interfaces.RecyclerRowInterface
+import com.example.shoppingapp.models.BasketProduct
 import com.example.shoppingapp.models.Product
+import com.example.shoppingapp.services.DBService
 
 class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
-    private val productDataSet: Array<Product> = arrayOf(
-        Product().apply {
-            name = "product1"
-            price = 25.0
-            description = "lorem ipsum dolor sit amet consectuar"
-        },
-        Product().apply {
-            name = "product2"
-            price = 23.0
-            description = "lorem ipsum dolor sit amet consectuar"
-        },
-        Product().apply {
-            name = "product3"
-            price = 21.0
-            description = "lorem ipsum dolor sit amet consectuar"
-        },
-        Product().apply {
-            name = "product4"
-            price = 37.0
-            description = "lorem ipsum dolor sit amet consectuar"
-        }
+    private var productDataSet: MutableList<Product> = mutableListOf()
+    private lateinit var mService: DBService
 
-        )
+    @SuppressLint("NotifyDataSetChanged")
+    fun initService(service: DBService) {
+        mService = service
+        /**
+         * UNCOMMENT TO POPULATE DATABASE
+        mService.initDBWithExampleData() // TODO: delet
+        mService.initDBBasket() // TODO: delet
+        productDataSet = mService.getAllProducts()
+        **/
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(val binding: ProductRowItemBinding, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
@@ -54,9 +52,28 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
         holder.binding.root.setOnClickListener {
             recyclerRowInterface.onClick(product)
         }
+        holder.binding.root.findViewById<ImageButton>(R.id.productAddToBasketButton).setOnClickListener {
+            addToBasket(product)
+        }
+    }
+
+    fun addToBasket(product: Product) {
+        val basketProduct: BasketProduct? = mService.checkIfProductIsInBasket(product)
+        if (basketProduct !== null)
+            mService.addLatterProductToBasket(basketProduct)
+        else
+            mService.addFirstProductToBasket(product)
+        val text: String
+        if (basketProduct !== null)
+            text = "addLatterProduct"
+        else
+            text = "AddFirstProduct"
+
+        Toast.makeText(this.mService.applicationContext, text, Toast.LENGTH_SHORT).show()  // possible problems
+//        Toast.makeText(this.mService.applicationContext, "Added product to basket", Toast.LENGTH_SHORT).show()  // possible problems
     }
 
     override fun getItemCount(): Int {
-       return productDataSet.size
+        return productDataSet.size
     }
 }

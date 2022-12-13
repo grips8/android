@@ -1,5 +1,7 @@
 package com.example.shoppingapp.adapters
 
+import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,42 +13,18 @@ import com.example.shoppingapp.R
 import com.example.shoppingapp.databinding.BasketRowItemBinding
 import com.example.shoppingapp.models.BasketProduct
 import com.example.shoppingapp.models.Product
+import com.example.shoppingapp.services.DBService
 
 class BasketAdapter : RecyclerView.Adapter<BasketAdapter.ViewHolder>() {
-    private val productDataSet: MutableList<BasketProduct> = mutableListOf(
-        BasketProduct(). apply {
-            product = Product().apply {
-                name = "product1"
-                price = 25.0
-                description = "lorem ipsum dolor sit amet consectuar"
-            }
-            quantity = 1
-        },
-        BasketProduct(). apply {
-            product = Product().apply {
-            name = "product2"
-            price = 23.0
-            description = "lorem ipsum dolor sit amet consectuar"
-            }
-            quantity = 1
-        },
-        BasketProduct(). apply {
-            product = Product().apply {
-                name = "product3"
-                price = 21.0
-                description = "lorem ipsum dolor sit amet consectuar"
-            }
-            quantity = 1
-        },
-        BasketProduct(). apply {
-            product = Product().apply {
-                name = "product4"
-                price = 37.0
-                description = "lorem ipsum dolor sit amet consectuar"
-            }
-            quantity = 1
-        }
-    )
+    private var productDataSet: MutableList<BasketProduct> = mutableListOf()
+    private lateinit var mService: DBService
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun initService(service: DBService) {
+        mService = service
+        productDataSet = mService.getAllBasketProducts()
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(val binding: BasketRowItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(basketProduct: BasketProduct) {
@@ -63,8 +41,8 @@ class BasketAdapter : RecyclerView.Adapter<BasketAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val view: View = holder.binding.root
-        view.findViewById<ImageButton>(R.id.bProductAddQty).setOnClickListener { changeQty(position, 1, view.findViewById(R.id.bProductQty)) }
-        view.findViewById<ImageButton>(R.id.bProductRemoveQty).setOnClickListener { changeQty(position, -1, view.findViewById(R.id.bProductQty)) }
+        view.findViewById<ImageButton>(R.id.bProductAddQty).setOnClickListener { increaseQty(position, view.findViewById(R.id.bProductQty)) }
+        view.findViewById<ImageButton>(R.id.bProductRemoveQty).setOnClickListener { decreaseQty(position, view.findViewById(R.id.bProductQty)) }
         val basketProduct: BasketProduct = productDataSet[position]
         holder.bind(basketProduct)
     }
@@ -73,15 +51,23 @@ class BasketAdapter : RecyclerView.Adapter<BasketAdapter.ViewHolder>() {
         return productDataSet.size
     }
 
-    private fun changeQty(position: Int, value: Int, textView: TextView) {
-        productDataSet[position].quantity += value
-        if (productDataSet[position].quantity <= 0) {
+    private fun increaseQty(position: Int, textView: TextView) {
+        Log.d("qty before: ", productDataSet[position].quantity.toString())
+        productDataSet[position] = mService.addLatterProductToBasket(productDataSet[position])
+        Log.d("qty after: ", productDataSet[position].quantity.toString())
+        textView.text = productDataSet[position].quantity.toString()
+    }
+
+    private fun decreaseQty(position: Int, textView: TextView) {
+        val basketProduct: BasketProduct? = mService.removeProductFromBasket(productDataSet[position])
+        if (basketProduct == null) {
             productDataSet.removeAt(position)
-            // TODO: remove from DB
             this.notifyItemRemoved(position)
             this.notifyItemRangeChanged(position, itemCount)
         }
-        else
+        else {
+            productDataSet[position] = basketProduct
             textView.text = productDataSet[position].quantity.toString()
+        }
     }
 }

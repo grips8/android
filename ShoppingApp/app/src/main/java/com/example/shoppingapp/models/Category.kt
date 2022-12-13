@@ -6,6 +6,6 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 class Category : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId.create()
+    var _id: String = ObjectId.create().toString()
     var name: String = ""
 }

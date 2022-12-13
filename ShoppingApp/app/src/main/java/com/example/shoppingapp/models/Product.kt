@@ -4,10 +4,9 @@ import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class Product : RealmObject, java.io.Serializable {
+class Product : RealmObject {
     @PrimaryKey
-    @Transient
-    var _id: ObjectId = ObjectId.create()
+    var _id: String = ObjectId.create().toString()
     var name: String = ""
     var price: Double = 0.0
     var description: String = ""

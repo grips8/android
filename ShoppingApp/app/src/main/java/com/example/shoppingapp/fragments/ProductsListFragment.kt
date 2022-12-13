@@ -1,7 +1,12 @@
 package com.example.shoppingapp.fragments
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +18,34 @@ import com.example.shoppingapp.activities.ProductDetailsActivity
 import com.example.shoppingapp.adapters.ProductAdapter
 import com.example.shoppingapp.interfaces.RecyclerRowInterface
 import com.example.shoppingapp.models.Product
+import com.example.shoppingapp.services.DBService
 
 class ProductsListFragment : Fragment(), RecyclerRowInterface {
+    private val adapter: ProductAdapter = ProductAdapter(this)
+    private lateinit var mService: DBService
+    private var mBound: Boolean = false
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            val binder = service as DBService.LocalBinder
+            mService = binder.getService()
+            mBound = true
+            adapter.initService(mService)
+
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            mBound = false
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Intent(requireActivity(), DBService::class.java).also { intent ->
+            requireActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,14 +54,22 @@ class ProductsListFragment : Fragment(), RecyclerRowInterface {
         val view: View = inflater.inflate(R.layout.fragment_products_list, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.productRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val adapter = ProductAdapter(this)
         recyclerView.adapter = adapter
         return view
     }
 
     override fun onClick(product: Product) {
         val intent: Intent = Intent(activity, ProductDetailsActivity::class.java)
-        intent.putExtra("product", product)
+        // bad code :)
+        intent.putExtra("name", product.name)
+        intent.putExtra("price", product.price)
+        intent.putExtra("description", product.description)
+        intent.putExtra("categoryName", if (product.category !== null) product.category?.name else "null")
         startActivity(intent)
+    }
+
+    override fun onDestroy() {
+        requireActivity().unbindService(connection)
+        super.onDestroy()
     }
 }
