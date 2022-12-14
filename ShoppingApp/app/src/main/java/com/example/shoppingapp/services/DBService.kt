@@ -6,10 +6,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.example.shoppingapp.models.Basket
-import com.example.shoppingapp.models.BasketProduct
-import com.example.shoppingapp.models.Category
-import com.example.shoppingapp.models.Product
+import com.example.shoppingapp.models.*
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
@@ -27,8 +24,8 @@ import kotlinx.coroutines.launch
 class DBService() : Service() {
     private val binder = LocalBinder()
     private lateinit var realm : Realm
-    private var BASKET_ID: String = "6394d7231153c730376aa1bf"
-    private val USER_ID: Int = 1
+    private var BASKET_ID: String = "placeholder"
+    private var USER_ID: String = "placeholder"
 
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +33,7 @@ class DBService() : Service() {
     }
 
     /** methods for clients  */
-    // TODO: setUser that finds user's basket or creates it
+        
 
     fun getAllProducts() : MutableList<Product> {
         val res: RealmResults<Product> = realm.query<Product>().find()
@@ -146,6 +143,19 @@ class DBService() : Service() {
             BASKET_ID = basket!!._id
         }
         return basket
+    }
+    fun initDBUser(basket: Basket?) {
+        realm.writeBlocking {
+            val user = this.copyToRealm(User().apply {
+                login = "student"
+                password = "root"
+                firstName = "Ewan"
+                surname = "McGregor"
+                this.basket = basket
+            })
+            Log.d("user: id: ", user._id)
+            USER_ID = user._id
+        }
     }
     /** end of client methods **/
 

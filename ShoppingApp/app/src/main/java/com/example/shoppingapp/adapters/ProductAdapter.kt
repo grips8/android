@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.databinding.ProductRowItemBinding
 import com.example.shoppingapp.interfaces.RecyclerRowInterface
+import com.example.shoppingapp.models.Basket
 import com.example.shoppingapp.models.BasketProduct
 import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
@@ -24,12 +25,12 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
     @SuppressLint("NotifyDataSetChanged")
     fun initService(service: DBService) {
         mService = service
-        /**
-         * UNCOMMENT TO POPULATE DATABASE
+
+        // * UNCOMMENT TO POPULATE DATABASE
         mService.initDBWithExampleData() // TODO: delet
-        mService.initDBBasket() // TODO: delet
+        val basket: Basket? = mService.initDBBasket() // TODO: delet
+        mService.initDBUser(basket)
         productDataSet = mService.getAllProducts()
-        **/
         notifyDataSetChanged()
     }
 
