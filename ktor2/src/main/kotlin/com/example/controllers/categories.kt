@@ -35,9 +35,10 @@ fun Route.categories() {
             } else {
                 val categoryJson = call.receive<CategoryJson>()
                 transaction {
-                    category.name = categoryJson.name
-                    category.tax = categoryJson.tax
-                    category.exclusiveness = categoryJson.exclusiveness
+                    category.apply {
+                        _id = categoryJson._id
+                        name = categoryJson.name
+                    }
                 }
                 call.respondText("Successfully updated the category.")
             }
@@ -58,9 +59,8 @@ fun Route.categories() {
             val categoryJson = call.receive<CategoryJson>()
             transaction {
                 Category.new {
+                    _id = categoryJson._id
                     name = categoryJson.name
-                    tax = categoryJson.tax
-                    exclusiveness = categoryJson.exclusiveness
                 }
             }
             call.respondText("Successfully added the category. =)")

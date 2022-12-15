@@ -1,5 +1,7 @@
 package com.example.controllers
 
+import com.example.models.Categories
+import com.example.models.Category
 import com.example.models.Product
 import com.example.models.ProductJson
 import io.ktor.http.*
@@ -8,6 +10,7 @@ import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.products() {
@@ -37,9 +40,13 @@ fun Route.products() {
             } else {
                 val productJson = call.receive<ProductJson>()
                 transaction {
-                    product.title = productJson.title
-                    product.price = productJson.price
-                    product.categoryID = productJson.categoryID
+                    product.apply {
+                        _id = productJson._id
+                        name = productJson.name
+                        price = productJson.price
+                        description = productJson.description
+                        categoryID = transaction { Category.find { Categories._id eq productJson._id }.first().id.value }   // troche dzikie
+                    }
                 }
                 call.respondText("Successfully updated the product.")
             }
@@ -59,9 +66,11 @@ fun Route.products() {
             val productJson = call.receive<ProductJson>()
             transaction {
                 Product.new {
-                    title = productJson.title
+                    _id = productJson._id
+                    name = productJson.name
                     price = productJson.price
-                    categoryID = productJson.categoryID
+                    description = productJson.description
+                    categoryID = transaction { Category.find { Categories._id eq productJson.category!!._id }.first().id.value }   // troche dzikie
                 }
             }
             call.respondText("Successfully added the product. =)")

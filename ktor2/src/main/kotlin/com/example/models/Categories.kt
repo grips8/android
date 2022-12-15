@@ -7,28 +7,23 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
 object Categories : IntIdTable() {
-    //    val id = integer("id").autoIncrement() // Column<Int>
+    val _id = varchar("_id", 48)
     val name = varchar("name", 50) // Column<String>
-    val tax = integer("tax") // Column<Int>
-    val exclusiveness = bool("exclusiveness") // Column<Boolean>
-//
-//    override val primaryKey = PrimaryKey(id, name = "PK_Products_ID")
 }
 
 
 class Category(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Category>(Categories)
 
+    var _id by Categories._id
     var name by Categories.name
-    var tax by Categories.tax
-    var exclusiveness by Categories.exclusiveness
 
     fun toData(): CategoryJson {
-        return CategoryJson(name, tax, exclusiveness)
+        return CategoryJson(_id, name)
     }
 }
 
 @Serializable
-data class CategoryJson(var name: String, var tax: Int, var exclusiveness: Boolean) {
-    constructor(cat: Category) : this(cat.name, cat.tax, cat.exclusiveness)
+data class CategoryJson(var _id: String, var name: String) {
+    constructor(cat: Category) : this(cat._id, cat.name)
 }
