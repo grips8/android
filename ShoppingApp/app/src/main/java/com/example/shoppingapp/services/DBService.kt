@@ -33,7 +33,7 @@ class DBService() : Service() {
     }
 
     /** methods for clients  */
-        
+
 
     fun getAllProducts() : MutableList<Product> {
         val res: RealmResults<Product> = realm.query<Product>().find()
