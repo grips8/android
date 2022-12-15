@@ -1,9 +1,6 @@
 package com.example.shoppingapp.adapters
 
 import android.annotation.SuppressLint
-import android.app.Application
-import android.app.Service
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -17,6 +14,9 @@ import com.example.shoppingapp.models.Basket
 import com.example.shoppingapp.models.BasketProduct
 import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
     private var productDataSet: MutableList<Product> = mutableListOf()
@@ -27,10 +27,22 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
         mService = service
 
         // * UNCOMMENT TO POPULATE DATABASE
-        mService.initDBWithExampleData() // TODO: delet
-        val basket: Basket? = mService.initDBBasket() // TODO: delet
-        mService.initDBUser(basket)
+//        mService.initDBWithExampleData() // TODO: delet
+//        val basket: Basket? = mService.initDBBasket() // TODO: delet
+//        mService.initDBUser(basket)
+
         productDataSet = mService.getAllProducts()
+
+        /** test */
+        val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+        val jsonAdapter: JsonAdapter<Product> = moshi.adapter(Product::class.java)
+        val json: String = "{\"_id\":\"639b363b253aa3223d6ba206\",\"category\":{\"_id\":\"639b363b253aa3223d6ba204\",\"name\":\"Food\"},\"description\":\"cool avocado\",\"name\":\"Avocado\",\"price\":7.99}"
+        val product = jsonAdapter.fromJson(json)
+//        val json: String = jsonAdapter.toJson(productDataSet[0])
+//        println(json)
+
+
+        /** test */
         notifyDataSetChanged()
     }
 

@@ -15,26 +15,62 @@ import io.realm.kotlin.notifications.ResultsChange
 import io.realm.kotlin.notifications.UpdatedResults
 import io.realm.kotlin.query.RealmResults
 import io.realm.kotlin.types.ObjectId
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
+import kotlin.coroutines.EmptyCoroutineContext
 
 class DBService() : Service() {
     private val binder = LocalBinder()
     private lateinit var realm : Realm
-    private var BASKET_ID: String = "placeholder"
-    private var USER_ID: String = "placeholder"
+    private var BASKET_ID: String = "639b4e7e376bd42ef6caa5fa"
+    private var USER_ID: String = "639b4e7e376bd42ef6caa5fc"
 
     override fun onCreate() {
         super.onCreate()
-        realm = Realm.open(RealmConfiguration.Builder(setOf(Basket::class, BasketProduct::class, Category::class, Product::class)).build())
+        runBlocking {
+            val result = async { getProductsFromApi() }
+            realm = Realm.open(RealmConfiguration.Builder(setOf(Basket::class, BasketProduct::class, Category::class, Product::class, User::class)).build())
+            deleteAllProducts()
+            result.await()?.forEach {
+                println(">>>>>> ${it._id}, ${it.name}, ${it.price}")
+                launch { upsertProduct(it) }
+            }
+        }
+    }
+
+    /** network methods */
+    private suspend fun getProductsFromApi() : List<Product>? {
+        try {
+            return KtorApi.retrofitService.getProducts()
+        }
+        catch (e: Exception) {
+            Log.d("network: ", "Failed to load data from network!")
+        }
+        return null
+    }
+
+    private suspend fun upsertProduct(product: Product) {
+        realm.write {
+            if (realm.query<Product>("_id = '${product._id}'").first().find() === null) {
+                val cat: Category? = realm.query<Category>("_id = '${product.category!!._id}'").first().find()
+                if (cat !== null)
+                    product.category = findLatest(cat)
+                else
+                    product.category = null
+                this.copyToRealm(product)
+            }
+        }
+    }
+
+    private fun deleteAllProducts() {
+        realm.writeBlocking {
+            val products: RealmResults<Product> = this.query<Product>().find()
+            delete(products)
+        }
     }
 
     /** methods for clients  */
-
-
     fun getAllProducts() : MutableList<Product> {
         val res: RealmResults<Product> = realm.query<Product>().find()
         val products: MutableList<Product> = mutableListOf()
@@ -119,6 +155,7 @@ class DBService() : Service() {
     fun initDBWithExampleData() {
         realm.writeBlocking {
             val cat = this.copyToRealm(Category().apply {
+                _id = "639b4e7e376bd42ef6caa5f3"
                 name = "Food"
             })
             this.copyToRealm(Product().apply {
@@ -138,7 +175,9 @@ class DBService() : Service() {
     fun initDBBasket() : Basket? {
         var basket: Basket? = null
         realm.writeBlocking {
-            basket = copyToRealm(Basket())
+            basket = copyToRealm(Basket().apply {
+                _id = "639b4e7e376bd42ef6caa5fc"
+            })
             Log.d("basket: id: ", basket!!._id)
             BASKET_ID = basket!!._id
         }
@@ -147,6 +186,7 @@ class DBService() : Service() {
     fun initDBUser(basket: Basket?) {
         realm.writeBlocking {
             val user = this.copyToRealm(User().apply {
+                _id = "639b4e7e376bd42ef6caa5fa"
                 login = "student"
                 password = "root"
                 firstName = "Ewan"
