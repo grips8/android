@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,16 +13,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
-import com.example.shoppingapp.activities.ProductDetailsActivity
+import com.example.shoppingapp.adapters.CategoryAdapter
 import com.example.shoppingapp.adapters.ProductAdapter
-import com.example.shoppingapp.interfaces.RecyclerRowInterface
-import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
 
-class ProductsListFragment : Fragment(), RecyclerRowInterface {
-    private val adapter: ProductAdapter = ProductAdapter(this)
+class CategoriesListFragment : Fragment() {
+    private val adapter: CategoryAdapter = CategoryAdapter()
     private lateinit var mService: DBService
     private var mBound: Boolean = false
     private val connection = object : ServiceConnection {
@@ -33,8 +28,6 @@ class ProductsListFragment : Fragment(), RecyclerRowInterface {
             mService = binder.getService()
             mBound = true
             adapter.initService(mService)
-            if (mService.isUserAllowed())
-                enableAdmin()
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -52,36 +45,12 @@ class ProductsListFragment : Fragment(), RecyclerRowInterface {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val view: View = inflater.inflate(R.layout.fragment_products_list, container, false)
-        val recyclerView: RecyclerView = view.findViewById(R.id.productRecyclerView)
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_categories_list, container, false)
+        val recyclerView: RecyclerView = view.findViewById(R.id.categoryRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
         return view
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (mBound && mService.productsChanged) {
-            adapter.initService(mService)
-            mService.productsChanged = false
-        }
-    }
-
-    override fun onClick(product: Product) {
-        val intent: Intent = Intent(activity, ProductDetailsActivity::class.java)
-        // bad code :)
-        intent.putExtra("name", product.name)
-        intent.putExtra("price", product.price)
-        intent.putExtra("description", product.description)
-        intent.putExtra("categoryName", if (product.category !== null) product.category?.name else "null")
-        startActivity(intent)
-    }
-
-    fun enableAdmin() {
-        activity?.findViewById<BottomNavigationView>(R.id.bottom_nav_view)?.menu?.let {
-            it.findItem(R.id.adminFragment)?.isVisible = true
-        }
     }
 
     override fun onDestroy() {

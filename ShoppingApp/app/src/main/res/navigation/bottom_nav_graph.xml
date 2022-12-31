@@ -14,4 +14,20 @@
         android:name="com.example.shoppingapp.fragments.ProductsListFragment"
         android:label="fragment_products_list"
         tools:layout="@layout/fragment_products_list" />
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.example.shoppingapp.fragments.UserFragment"
+        android:label="fragment_user"
+        tools:layout="@layout/fragment_user" />
+    <fragment
+        android:id="@+id/categoriesListFragment"
+        android:name="com.example.shoppingapp.fragments.CategoriesListFragment"
+        android:label="fragment_categories_list"
+        tools:layout="@layout/fragment_categories_list" />
+    <fragment
+        android:id="@+id/adminFragment"
+        android:name="com.example.shoppingapp.fragments.AdminFragment"
+        android:label="fragment_admin"
+        tools:layout="@layout/fragment_admin" />
+
 </navigation>

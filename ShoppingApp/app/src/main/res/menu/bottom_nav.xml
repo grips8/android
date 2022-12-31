@@ -5,8 +5,20 @@
         android:title="Products"
         android:icon="@drawable/list"/>
     <item
+        android:id="@+id/categoriesListFragment"
+        android:title="Categories"
+        android:icon="@drawable/category"/>
+    <item
         android:id="@+id/basketFragment"
         android:title="Basket"
         android:icon="@drawable/basket"/>
-
+    <item
+        android:id="@+id/userFragment"
+        android:title="Account"
+        android:icon="@drawable/account"/>
+    <item
+        android:id="@+id/adminFragment"
+        android:title="Admin"
+        android:icon="@drawable/add"
+        android:visible="false"/>
 </menu>

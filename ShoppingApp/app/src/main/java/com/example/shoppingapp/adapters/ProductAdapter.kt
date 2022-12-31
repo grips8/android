@@ -1,6 +1,7 @@
 package com.example.shoppingapp.adapters
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -25,25 +26,9 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
     @SuppressLint("NotifyDataSetChanged")
     fun initService(service: DBService) {
         mService = service
-
-        // * UNCOMMENT TO POPULATE DATABASE
-//        mService.initDBWithExampleData() // TODO: delet
-//        val basket: Basket? = mService.initDBBasket() // TODO: delet
-//        mService.initDBUser(basket)
-
         productDataSet = mService.getAllProducts()
-
-        /** test */
-        val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-        val jsonAdapter: JsonAdapter<Product> = moshi.adapter(Product::class.java)
-        val json: String = "{\"_id\":\"639b363b253aa3223d6ba206\",\"category\":{\"_id\":\"639b363b253aa3223d6ba204\",\"name\":\"Food\"},\"description\":\"cool avocado\",\"name\":\"Avocado\",\"price\":7.99}"
-        val product = jsonAdapter.fromJson(json)
-//        val json: String = jsonAdapter.toJson(productDataSet[0])
-//        println(json)
-
-
-        /** test */
         notifyDataSetChanged()
+        Log.d("Product adapter: ", "launching initService()")
     }
 
     class ViewHolder(val binding: ProductRowItemBinding, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.ViewHolder(binding.root) {
@@ -83,7 +68,6 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
             text = "AddFirstProduct"
 
         Toast.makeText(this.mService.applicationContext, text, Toast.LENGTH_SHORT).show()  // possible problems
-//        Toast.makeText(this.mService.applicationContext, "Added product to basket", Toast.LENGTH_SHORT).show()  // possible problems
     }
 
     override fun getItemCount(): Int {
