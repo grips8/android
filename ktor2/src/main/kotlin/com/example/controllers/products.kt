@@ -62,7 +62,7 @@ fun Route.products() {
                 call.respondText("Successfully deleted the product.")
             }
         }
-        post("/add") {
+        post("/post") {
             val productJson = call.receive<ProductJson>()
             transaction {
                 Product.new {

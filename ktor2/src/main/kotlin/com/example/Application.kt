@@ -1,7 +1,10 @@
 package com.example
 
+import com.example.controllers.basketRoutes
 import com.example.controllers.categoriesRoutes
 import com.example.controllers.customerRoutes
+import com.example.models.BasketProducts
+import com.example.models.Baskets
 import com.example.models.Categories
 import com.example.models.Products
 import io.ktor.server.application.*
@@ -29,8 +32,11 @@ fun Application.module() {
     transaction {
         SchemaUtils.create(Products)
         SchemaUtils.create(Categories)
+        SchemaUtils.create(Baskets)
+        SchemaUtils.create(BasketProducts)
     }
 
     categoriesRoutes()
     customerRoutes()
+    basketRoutes()
 }
