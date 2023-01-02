@@ -11,13 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.databinding.ProductRowItemBinding
 import com.example.shoppingapp.interfaces.RecyclerRowInterface
-import com.example.shoppingapp.models.Basket
 import com.example.shoppingapp.models.BasketProduct
 import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
     private var productDataSet: MutableList<Product> = mutableListOf()

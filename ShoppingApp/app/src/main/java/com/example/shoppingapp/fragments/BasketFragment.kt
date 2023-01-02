@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.adapters.BasketAdapter
-import com.example.shoppingapp.adapters.ProductAdapter
 import com.example.shoppingapp.services.DBService
 
 class BasketFragment : Fragment() {

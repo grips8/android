@@ -6,16 +6,9 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.example.shoppingapp.models.*
-import com.example.shoppingapp.utils.JsonBasket
-import com.example.shoppingapp.utils.MoshiBasketAdapter
 import com.google.firebase.auth.FirebaseAuth
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapter
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
-import io.realm.kotlin.ext.isFrozen
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.*

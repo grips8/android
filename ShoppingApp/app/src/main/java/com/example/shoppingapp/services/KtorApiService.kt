@@ -3,12 +3,10 @@ package com.example.shoppingapp.services
 import com.example.shoppingapp.models.Basket
 import com.example.shoppingapp.models.Category
 import com.example.shoppingapp.models.Product
-import com.example.shoppingapp.models.User
 import com.example.shoppingapp.utils.JsonBasket
 import com.example.shoppingapp.utils.MoshiBasketAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body

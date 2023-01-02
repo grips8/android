@@ -1,10 +1,7 @@
 package com.example.shoppingapp.activities
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.example.shoppingapp.R
 import com.example.shoppingapp.databinding.ActivityProductDetailsBinding

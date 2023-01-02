@@ -11,7 +11,8 @@
   - 15.12.2022 - pobieranie produktow z ktora 3.0 
   - 31.12.2022 - wszystkie funkcjonalnosci na 5.0   
 * Zadanie nr 8:  
-  - 31.12.2022 - logowanie i rejestracja przez firebase 3.5  
+  - 31.12.2022 - logowanie i rejestracja przez firebase 3.5 
+  - 02.01.2023 - oauth google i github 4.5   
 * Zadanie nr 9:  
 * Zadanie nr 10:  
 * Zadanie nr 11:  

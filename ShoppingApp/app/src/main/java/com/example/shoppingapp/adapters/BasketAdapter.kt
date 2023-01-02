@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.databinding.BasketRowItemBinding
 import com.example.shoppingapp.models.BasketProduct
-import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
 
 class BasketAdapter : RecyclerView.Adapter<BasketAdapter.ViewHolder>() {

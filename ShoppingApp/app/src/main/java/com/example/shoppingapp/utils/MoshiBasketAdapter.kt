@@ -1,6 +1,5 @@
 package com.example.shoppingapp.utils
 
-import com.example.shoppingapp.models.Basket
 import com.example.shoppingapp.models.BasketProduct
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson

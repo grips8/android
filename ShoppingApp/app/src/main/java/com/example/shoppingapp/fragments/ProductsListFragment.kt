@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,6 @@ import com.example.shoppingapp.interfaces.RecyclerRowInterface
 import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
 
 class ProductsListFragment : Fragment(), RecyclerRowInterface {
     private val adapter: ProductAdapter = ProductAdapter(this)
