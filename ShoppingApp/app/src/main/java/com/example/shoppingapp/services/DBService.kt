@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import android.util.TimeUtils
 import com.example.shoppingapp.models.*
 import com.google.firebase.auth.FirebaseAuth
 import io.realm.kotlin.Realm
@@ -12,6 +13,7 @@ import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 
 class DBService() : Service() {
     private val binder = LocalBinder()
@@ -20,13 +22,15 @@ class DBService() : Service() {
     private var USER_ID: String = ""
     private var allowedUsers: List<String> = listOf("anTAvEP3nWX9qdT9hY1cdJAvsyE2")
     var productsChanged = false
+    var currentIdToken = ""
+    var tokenIssuedAt = 0L
 
     override fun onCreate() {
         super.onCreate()
-        FirebaseAuth.getInstance().currentUser?.let {
-            USER_ID = it.uid
-            Log.d("user: ", USER_ID)
+        FirebaseAuth.getInstance().currentUser?.let { mUser ->
+            USER_ID = mUser.uid
         }
+//        getUserToken()
 
         runBlocking {
             val fetchedProducts = async { getProductsFromApi() }
@@ -64,7 +68,7 @@ class DBService() : Service() {
     private suspend fun getBasketFromApi(uid: String) : Basket? {
         try {
             var basket: Basket? = null
-            val arr = KtorApi.retrofitService.getBasket(uid)
+            val arr = KtorApi.retrofitService.getBasket(uid, getUserToken())
             if (arr.isNotEmpty())
                 basket = Basket(arr[0], realm)
             return basket
@@ -78,7 +82,7 @@ class DBService() : Service() {
 
     private suspend fun getProductsFromApi() : List<Product>? {
         try {
-            return KtorApi.retrofitService.getProducts()
+            return KtorApi.retrofitService.getProducts(getUserToken())
         }
         catch (e: Exception) {
             Log.e("network: ", "Failed to load (products) data from network!")
@@ -89,7 +93,7 @@ class DBService() : Service() {
 
     private suspend fun getCategoriesFromApi() : List<Category>? {
         try {
-            return KtorApi.retrofitService.getCategories()
+            return KtorApi.retrofitService.getCategories(getUserToken())
         }
         catch (e: Exception) {
             Log.e("network: ", "Failed to load data (categories) from network!")
@@ -100,7 +104,7 @@ class DBService() : Service() {
 
     private suspend fun postBasketToApi(basket: Basket) {
         try {
-            KtorApi.retrofitService.postBasket(USER_ID, basket)
+            KtorApi.retrofitService.postBasket(USER_ID, basket, getUserToken())
         }
         catch (e: Exception) {
             Log.e("network: ", "Failed to save data (basket) to network server!")
@@ -110,7 +114,7 @@ class DBService() : Service() {
 
     private suspend fun postProductToApi(product: Product) {
         try {
-            KtorApi.retrofitService.postProduct(product)
+            KtorApi.retrofitService.postProduct(product, getUserToken())
         }
         catch (e: Exception) {
             Log.e("network: ", "Failed to save data (product) to network server!")
@@ -119,7 +123,24 @@ class DBService() : Service() {
     }
 
     /** helper methods */
-    private fun getBasket(b_id: String) : Basket? {
+    private fun getUserToken() : String {
+        val time = System.currentTimeMillis() / 1000
+        if (time - tokenIssuedAt > 3000) {      // token refreshes every 1hr
+            FirebaseAuth.getInstance().currentUser?.let { mUser ->
+                runBlocking {
+                    mUser.getIdToken(true).await().apply {
+                        tokenIssuedAt = this.issuedAtTimestamp
+                        this.token?.let { token ->
+                            currentIdToken = token
+                        }
+                    }
+                }
+            }
+        }
+        return currentIdToken
+    }
+
+    private fun getBasket() : Basket? {
         return realm.query<Basket>("_id = '${BASKET_ID}'").first().find()
     }
 
@@ -219,7 +240,7 @@ class DBService() : Service() {
     }
 
     fun getAllBasketProducts() : MutableList<BasketProduct> {
-        val basket: Basket? = getBasket(BASKET_ID)
+        val basket: Basket? = getBasket()
         if (basket !== null) {
             val products: MutableList<BasketProduct> = mutableListOf()
             products.addAll(basket.products)
@@ -229,7 +250,7 @@ class DBService() : Service() {
     }
 
     fun checkIfProductIsInBasket(product: Product) : BasketProduct? {
-        val basket: Basket? = getBasket(BASKET_ID)
+        val basket: Basket? = getBasket()
         if (basket !== null) {
             basket.products.forEach {
                 if (it.product!!._id == product._id)
@@ -241,7 +262,7 @@ class DBService() : Service() {
 
     // links basket to product, because no such products are in the basket
     fun addFirstProductToBasket(product: Product) {
-        val basket: Basket? = getBasket(BASKET_ID)
+        val basket: Basket? = getBasket()
         if (basket !== null) {
             realm.writeBlocking {
                 val basketProduct = copyToRealm(BasketProduct().apply {
@@ -279,7 +300,7 @@ class DBService() : Service() {
             return realm.query<BasketProduct>("_id = '${basketProduct._id}'").first().find()
         }
         else {
-            val basket: Basket? = getBasket(BASKET_ID)
+            val basket: Basket? = getBasket()
             if (basket !== null) {
                 CoroutineScope(Dispatchers.Main).launch {
                     realm.writeBlocking {
@@ -350,7 +371,7 @@ class DBService() : Service() {
 
     override fun onDestroy() {
         runBlocking {
-            postBasketToApi(getBasket(BASKET_ID)!!)
+            postBasketToApi(getBasket()!!)
         }
         realm.close()
         Log.i("DBService", "><><><><><><><><DESTROYING><><><><><><><><><")
