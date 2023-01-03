@@ -2,6 +2,8 @@ package com.example.controllers
 
 import com.example.models.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+//import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -75,6 +77,8 @@ fun Route.baskets() {
 
 fun Application.basketRoutes() {
     routing {
-        baskets()
+        authenticate("auth") {
+            baskets()
+        }
     }
 }

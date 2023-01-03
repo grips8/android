@@ -3,6 +3,7 @@ package com.example.controllers
 import com.example.models.Category
 import com.example.models.CategoryJson
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -71,6 +72,8 @@ fun Route.categories() {
 
 fun Application.categoriesRoutes() {
     routing {
-        categories()
+        authenticate("auth") {
+            categories()
+        }
     }
 }
