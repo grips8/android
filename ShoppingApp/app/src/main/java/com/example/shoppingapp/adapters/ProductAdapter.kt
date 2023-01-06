@@ -10,12 +10,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.databinding.ProductRowItemBinding
-import com.example.shoppingapp.interfaces.RecyclerRowInterface
+import com.example.shoppingapp.interfaces.ProductRecyclerRowInterface
 import com.example.shoppingapp.models.BasketProduct
 import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
 
-class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+class ProductAdapter(private val productRecyclerRowInterface: ProductRecyclerRowInterface) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
     private var productDataSet: MutableList<Product> = mutableListOf()
     private lateinit var mService: DBService
 
@@ -27,7 +27,7 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
         Log.d("Product adapter: ", "launching initService()")
     }
 
-    class ViewHolder(val binding: ProductRowItemBinding, private val recyclerRowInterface: RecyclerRowInterface) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(val binding: ProductRowItemBinding, private val productRecyclerRowInterface: ProductRecyclerRowInterface) : RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.model = product
         }
@@ -37,14 +37,14 @@ class ProductAdapter(private val recyclerRowInterface: RecyclerRowInterface) : R
         val binding: ProductRowItemBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
             R.layout.product_row_item, parent, false)
-        return ViewHolder(binding, recyclerRowInterface)
+        return ViewHolder(binding, productRecyclerRowInterface)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val product: Product = productDataSet[position]
         holder.bind(product)
         holder.binding.root.setOnClickListener {
-            recyclerRowInterface.onClick(product)
+            productRecyclerRowInterface.onClick(product)
         }
         holder.binding.root.findViewById<ImageButton>(R.id.productAddToBasketButton).setOnClickListener {
             addToBasket(product)

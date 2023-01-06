@@ -2,6 +2,6 @@ package com.example.shoppingapp.interfaces
 
 import com.example.shoppingapp.models.Product
 
-interface RecyclerRowInterface {
+interface ProductRecyclerRowInterface {
     fun onClick(product: Product)
 }

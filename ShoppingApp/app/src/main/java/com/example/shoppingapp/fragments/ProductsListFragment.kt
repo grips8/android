@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.activities.ProductDetailsActivity
 import com.example.shoppingapp.adapters.ProductAdapter
-import com.example.shoppingapp.interfaces.RecyclerRowInterface
+import com.example.shoppingapp.interfaces.ProductRecyclerRowInterface
 import com.example.shoppingapp.models.Product
 import com.example.shoppingapp.services.DBService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class ProductsListFragment : Fragment(), RecyclerRowInterface {
+class ProductsListFragment : Fragment(), ProductRecyclerRowInterface {
     private val adapter: ProductAdapter = ProductAdapter(this)
     private lateinit var mService: DBService
     private var mBound: Boolean = false

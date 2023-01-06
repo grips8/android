@@ -14,7 +14,8 @@
   - 31.12.2022 - logowanie i rejestracja przez firebase 3.5 
   - 02.01.2023 - oauth google i github 4.5   
   - 03.01.2023 - dodanie weryfikacji tokenu, ktory na KTORze pobierany jest z serwera firebase, a po stronie aplikacji dodawany do kazdego requestu. 5.0  
-* Zadanie nr 9:  
+* Zadanie nr 9: 
+  - 06.01.2023 - platnosc i mockowanie + model platnosci + lista zamowien w tabie user (bez wyswietlania zawartosci poszczegolnych zamowien) 3.5   
 * Zadanie nr 10:  
 * Zadanie nr 11:  
 

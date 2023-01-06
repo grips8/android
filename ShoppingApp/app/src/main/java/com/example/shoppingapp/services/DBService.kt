@@ -14,6 +14,8 @@ import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import retrofit2.Call
+import retrofit2.await
 
 class DBService() : Service() {
     private val binder = LocalBinder()
@@ -22,6 +24,8 @@ class DBService() : Service() {
     private var USER_ID: String = ""
     private var allowedUsers: List<String> = listOf("anTAvEP3nWX9qdT9hY1cdJAvsyE2")
     var productsChanged = false
+    var ordersChanged = false
+    var basketChanged = false
     var currentIdToken = ""
     var tokenIssuedAt = 0L
 
@@ -35,22 +39,31 @@ class DBService() : Service() {
         runBlocking {
             val fetchedProducts = async { getProductsFromApi() }
             val fetchedCategories = async { getCategoriesFromApi() }
-            realm = Realm.open(RealmConfiguration.Builder(setOf(Basket::class, BasketProduct::class, Category::class, Product::class, User::class)).build())
-            deleteAllProducts()
-            deleteAllCategories()
+            val realmSet = setOf(Basket::class, BasketProduct::class, Category::class, Product::class, User::class, Order::class)
+            realm = Realm.open(RealmConfiguration.Builder(realmSet).build())
+            realm.write {
+                deleteAll()
+            }
             runBlocking {
-                fetchedCategories.await()?.forEach {
-                    launch { upsertCategory(it) }
+                fetchedCategories.await()?.forEach { category ->
+                    launch { upsertCategory(category) }
                 }
             }
             runBlocking {
-                fetchedProducts.await()?.forEach {
-                    launch { upsertProduct(it) }        // should be swapped for normal insert? (no need to check if item is present in realm)
+                fetchedProducts.await()?.forEach { product ->
+                    launch { upsertProduct(product) }        // should be swapped for normal insert? (no need to check if item is present in realm)
+                }
+            }
+            val fetchedOrders = async { getOrdersFromApi() }    // must be here, because products must be present in realm
+            runBlocking {
+                fetchedOrders.await()?.forEach { order ->
+                    launch {
+                        insertBasket(order.basket!!)
+                        insertOrder(order)
+                    }
                 }
             }
             // not sure if runBlocking here are necessary
-            deleteBaskets()
-            deleteBasketProducts()
             getBasketFromApi(USER_ID)?.let {
                 insertBasket(it)
                 BASKET_ID = it._id
@@ -122,6 +135,35 @@ class DBService() : Service() {
         }
     }
 
+    private suspend fun postOrderToApi(cardOrder: CardOrder) {
+        try {
+            KtorApi.retrofitService.postOrder(USER_ID, cardOrder, getUserToken())
+        }
+        catch (e: Exception) {
+            Log.e("network: ", "Failed to save data (order) to network server!")
+            Log.e("network: ", e.message.toString())
+        }
+    }
+
+    private suspend fun getOrdersFromApi() : List<Order>? {
+        try {
+            val jsonOrderList = KtorApi.retrofitService.getOrders(USER_ID, getUserToken())
+            val orderList: MutableList<Order> = mutableListOf()
+            jsonOrderList.forEach { jsonOrder ->
+                orderList.add(Order().apply {
+                    _id = jsonOrder._id
+                    basket = Basket(jsonOrder.basket, realm)
+                })
+            }
+            return orderList
+        }
+        catch (e: Exception) {
+            Log.e("network: ", "Failed to load data (orders) from network!")
+            Log.e("network: ", e.message.toString())
+        }
+        return null
+    }
+
     /** helper methods */
     private fun getUserToken() : String {
         val time = System.currentTimeMillis() / 1000
@@ -140,7 +182,7 @@ class DBService() : Service() {
         return currentIdToken
     }
 
-    private fun getBasket() : Basket? {
+    fun getBasket() : Basket? {
         return realm.query<Basket>("_id = '${BASKET_ID}'").first().find()
     }
 
@@ -155,6 +197,29 @@ class DBService() : Service() {
             })
         }
     }
+
+    private fun insertOrder(order: Order) {
+        realm.writeBlocking {
+//            this.copyToRealm(order.apply {
+//                this.basket = findLatest(this.basket!!)!!         // idk why it doesn't work
+//            } )
+            order.basket = realm.query<Basket>("_id = '${order.basket!!._id}'").first().find()
+            order.basket = findLatest(order.basket!!) // xD?
+            this.copyToRealm(order)
+        }
+    }
+
+    private fun upsertOrder(order: Order) {
+        realm.writeBlocking {
+            if (realm.query<Order>("_id = '${order._id}'").first().find() === null) {
+                this.copyToRealm(order.apply {
+                    basket = realm.query<Basket>("_id = '${this.basket!!._id}'").first().find() // quickfix
+                    this.basket = findLatest(this.basket!!)!!
+                } )
+            }
+        }
+    }
+
     suspend fun upsertProduct(product: Product) {
         realm.write {
             if (realm.query<Product>("_id = '${product._id}'").first().find() === null) {
@@ -176,42 +241,31 @@ class DBService() : Service() {
         }
     }
 
-    private fun deleteAllProducts() {
-        realm.writeBlocking {
-            val products: RealmResults<Product> = this.query<Product>().find()
-            delete(products)
-        }
-    }
-
-    private fun deleteAllCategories() {
-        realm.writeBlocking {
-            val categories: RealmResults<Category> = this.query<Category>().find()
-            delete(categories)
-        }
-    }
-
-    private fun deleteAllUsers() {
-        realm.writeBlocking {
-            val users: RealmResults<User> = this.query<User>().find()
-            delete(users)
-        }
-    }
-
-    private fun deleteBaskets() {
-        realm.writeBlocking {
-            val baskets: RealmResults<Basket> = this.query<Basket>().find()
-            delete(baskets)
-        }
-    }
-
-    private fun deleteBasketProducts() {
-        realm.writeBlocking {
-            val basketProducts: RealmResults<BasketProduct> = this.query<BasketProduct>().find()
-            delete(basketProducts)
+    private fun makeNewBasket() {
+        Basket().also {
+            insertBasket(it)
+            BASKET_ID = it._id
         }
     }
 
     /** methods for clients  */
+    fun getAllOrders() : MutableList<Order> {
+        val res: RealmResults<Order> = realm.query<Order>().find()
+        val orders: MutableList<Order> = mutableListOf()
+        orders.addAll(res)
+        return orders
+    }
+
+    fun postOrder(cardOrder: CardOrder) {
+        runBlocking {
+            postOrderToApi(cardOrder)
+            getOrdersFromApi()?.forEach { order ->
+                launch { upsertOrder(order) }
+            }
+            makeNewBasket()
+        }
+    }
+
     fun postProduct(product: Product) {
         runBlocking {
             postProductToApi(product)
@@ -310,52 +364,6 @@ class DBService() : Service() {
                 }
             }
             return null
-        }
-    }
-
-    fun initDBWithExampleData() {
-        realm.writeBlocking {
-            val cat = this.copyToRealm(Category().apply {
-                _id = "639b4e7e376bd42ef6caa5f3"
-                name = "Food"
-            })
-            this.copyToRealm(Product().apply {
-                name = "Avocado"
-                price = 7.99
-                description = "cool avocado"
-                category = cat
-            })
-            this.copyToRealm(Product().apply {
-                name = "Bread"
-                price = 4.20
-                description = "cool bread"
-                category = null
-            })
-        }
-    }
-    fun initDBBasket() : Basket? {
-        var basket: Basket? = null
-        realm.writeBlocking {
-            basket = copyToRealm(Basket().apply {
-                _id = "639b4e7e376bd42ef6caa5fc"
-            })
-            Log.d("basket: id: ", basket!!._id)
-            BASKET_ID = basket!!._id
-        }
-        return basket
-    }
-    fun initDBUser(basket: Basket?) {
-        realm.writeBlocking {
-            val user = this.copyToRealm(User().apply {
-                _id = "639b4e7e376bd42ef6caa5fa"
-                login = "student"
-                password = "root"
-                firstName = "Ewan"
-                surname = "McGregor"
-                this.basket = basket
-            })
-            Log.d("user: id: ", user._id)
-            USER_ID = user._id
         }
     }
     /** end of client methods **/

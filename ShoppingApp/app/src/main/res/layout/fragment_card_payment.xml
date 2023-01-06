@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.CardPaymentFragment"
+    android:background="@color/material_dynamic_neutral95">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="30dp">
+        <TextView
+            android:id="@+id/label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ENTER MAGIC NUMBERS :)"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            style="@style/TextAppearance.AppCompat.Headline"/>
+        <TextView
+            android:id="@+id/cardName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="name and surname: "
+            app:layout_constraintTop_toBottomOf="@id/label"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"/>
+        <EditText
+            android:id="@+id/cardNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cardName"
+            app:layout_constraintStart_toStartOf="parent"
+            android:hint="Ewan McGregor"
+            android:background="@color/white"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/cardNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="card number: "
+            app:layout_constraintTop_toBottomOf="@id/cardNameInput"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"/>
+        <EditText
+            android:id="@+id/cardNumberInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="1234 5678 9000 1234"
+            app:layout_constraintTop_toBottomOf="@id/cardNumber"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@color/white"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/cardExp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="exp. date: "
+            app:layout_constraintTop_toBottomOf="@id/cardNumberInput"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"/>
+        <EditText
+            android:id="@+id/cardExpInput"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cardExp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:hint="MM/YYYY"
+            android:background="@color/white"
+            android:textSize="20sp"
+            android:textAlignment="gravity"
+            android:gravity="top"/>
+        <TextView
+            android:id="@+id/cardCVV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CVV code: "
+            app:layout_constraintTop_toBottomOf="@id/cardExpInput"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"/>
+        <EditText
+            android:id="@+id/cardCVVInput"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:hint="000"
+            app:layout_constraintTop_toBottomOf="@id/cardCVV"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="20sp"
+            android:background="@color/white"/>
+        <ImageButton
+            android:id="@+id/orderSubmit"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cardCVVInput"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/check"
+            android:layout_marginTop="20dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

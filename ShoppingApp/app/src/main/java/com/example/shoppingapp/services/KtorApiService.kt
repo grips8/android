@@ -1,12 +1,12 @@
 package com.example.shoppingapp.services
 
-import com.example.shoppingapp.models.Basket
-import com.example.shoppingapp.models.Category
-import com.example.shoppingapp.models.Product
+import com.example.shoppingapp.models.*
 import com.example.shoppingapp.utils.JsonBasket
+import com.example.shoppingapp.utils.JsonOrder
 import com.example.shoppingapp.utils.MoshiBasketAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
@@ -32,6 +32,10 @@ interface KtorApiService {
     suspend fun postBasket(@Path("user_id") uid: String, @Body basket: Basket, @Header("firebaseIDToken") firebaseIDToken: String)
     @POST("products/post")
     suspend fun postProduct(@Body product: Product, @Header("firebaseIDToken") firebaseIDToken: String)
+    @POST("orders/{user_id}/post")
+    suspend fun postOrder(@Path("user_id") uid: String, @Body cardOrder: CardOrder, @Header("firebaseIDToken") firebaseIDToken: String)
+    @GET("orders/{user_id}/get")
+    suspend fun getOrders(@Path("user_id") uid: String, @Header("firebaseIDToken") firebaseIDToken: String) : List<JsonOrder>
 }
 
 object KtorApi {

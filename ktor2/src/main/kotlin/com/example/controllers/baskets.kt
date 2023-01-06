@@ -20,12 +20,7 @@ fun Route.baskets() {
                 call.respond("[]")
             } else {
                 val basket: Basket = transaction { Basket.wrapRow(row) }
-                val mList: MutableList<BasketProductJson> = mutableListOf()
-                transaction { BasketProducts.select { BasketProducts.b_id eq basket._id }.forEach {
-                    val basketProduct: BasketProduct = BasketProduct.wrapRow(it)
-                    mList.add(BasketProductJson(basketProduct._id, basketProduct.p_id, basketProduct.quantity))
-                } }
-                call.respond(listOf(BasketJson(basket._id, mList.toList())))
+                call.respond(listOf(BasketJson(basket)))
             }
         }
         post("/post") {

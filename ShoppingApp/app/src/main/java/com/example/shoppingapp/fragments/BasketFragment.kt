@@ -10,6 +10,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
@@ -43,7 +47,30 @@ class BasketFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.basketRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
+        view.findViewById<Button>(R.id.orderButton).setOnClickListener { goToCheckout() }
         return view
+    }
+
+    private fun goToCheckout() {
+        if (adapter.itemCount == 0) {
+            Toast.makeText(context, "No products in basket!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val fragmentManager: FragmentManager = this.parentFragmentManager
+
+        fragmentManager.commit {
+            replace(R.id.nav_fragment_container, CardPaymentFragment())
+            setReorderingAllowed(true)
+            addToBackStack(null)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mBound && mService.basketChanged) {
+            adapter.initService(mService)
+            mService.basketChanged = false
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
