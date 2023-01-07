@@ -7,11 +7,11 @@ import com.example.controllers.ordersRoutes
 import com.example.models.*
 import io.ktor.server.application.*
 import com.example.plugins.*
-//import com.google.auth.oauth2.GoogleCredentials
-//import com.google.firebase.FirebaseApp
-//import com.google.firebase.FirebaseOptions
-//import com.google.firebase.auth.FirebaseAuth
-//import com.google.firebase.auth.FirebaseToken
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseToken
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -28,12 +28,12 @@ fun main(args: Array<String>): Unit =
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
-//    val serviceAccount = File("src/main/resources/service-account.json").inputStream()
-//    val options: FirebaseOptions = FirebaseOptions.builder()
-//        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-//        .build()
+    val serviceAccount = File("src/main/resources/service-account.json").inputStream()
+    val options: FirebaseOptions = FirebaseOptions.builder()
+        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+        .build()
 
-//    FirebaseApp.initializeApp(options)
+    FirebaseApp.initializeApp(options)
 
     configureHTTP()
     configureSerialization()
@@ -43,17 +43,17 @@ fun Application.module() {
         basic("auth") {
             skipWhen { call ->
                 runBlocking {
-//                    val token = call.request.headers["firebaseIDToken"] ?: return@runBlocking false
-//                    if (token == "") return@runBlocking false
-//                    var verified: FirebaseToken? = null
-//                    try {
-//                        verified = FirebaseAuth.getInstance().verifyIdToken(token, true)
-//                    }
-//                    catch (e: Exception) {
-//                        println("Exception message: ${e.message}")
-//                    }
-//                    return@runBlocking  verified != null
-                    return@runBlocking true
+                    val token = call.request.headers["firebaseIDToken"] ?: return@runBlocking false
+                    if (token == "") return@runBlocking false
+                    var verified: FirebaseToken? = null
+                    try {
+                        verified = FirebaseAuth.getInstance().verifyIdToken(token, true)
+                    }
+                    catch (e: Exception) {
+                        println("Exception message: ${e.message}")
+                    }
+                    return@runBlocking  verified != null
+//                    return@runBlocking true
                 }
             }
         }
