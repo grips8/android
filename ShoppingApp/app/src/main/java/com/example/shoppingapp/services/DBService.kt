@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import android.util.TimeUtils
 import com.example.shoppingapp.models.*
 import com.google.firebase.auth.FirebaseAuth
 import io.realm.kotlin.Realm
@@ -14,8 +13,6 @@ import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import retrofit2.Call
-import retrofit2.await
 
 class DBService() : Service() {
     private val binder = LocalBinder()
@@ -34,7 +31,6 @@ class DBService() : Service() {
         FirebaseAuth.getInstance().currentUser?.let { mUser ->
             USER_ID = mUser.uid
         }
-//        getUserToken()
 
         runBlocking {
             val fetchedProducts = async { getProductsFromApi() }
@@ -78,6 +74,16 @@ class DBService() : Service() {
     }
 
     /** network methods */
+    private suspend fun postStripeIntentToApi(order: Order) : String? {
+        try {
+            return KtorApi.retrofitService.postStripeIntent(USER_ID, getUserToken(), order)
+        }
+        catch (e: Exception) {
+            Log.e("network: ", "Failed to load data (stripe intent) from network!")
+            Log.e("network: ", e.message.toString())
+        }
+        return null
+    }
     private suspend fun getBasketFromApi(uid: String) : Basket? {
         try {
             var basket: Basket? = null
@@ -249,6 +255,28 @@ class DBService() : Service() {
     }
 
     /** methods for clients  */
+    fun getBasketProductsById (b_id: String) : MutableList<BasketProduct> {
+        val basketProducts: MutableList<BasketProduct> = mutableListOf()
+        realm.query<Basket>("_id = '${b_id}'").first().find()?.let { basket ->
+            basketProducts.addAll(basket.products)
+        }
+        return basketProducts
+    }
+
+    suspend fun postStripeIntent() : String? {
+        val order: Order = Order().apply {
+            basket = getBasket()
+        }
+        val res = postStripeIntentToApi(order)
+        getOrdersFromApi()?.forEach {
+             upsertOrder(it)
+        }
+        makeNewBasket()
+        ordersChanged = true
+        basketChanged = true
+        return res
+    }
+
     fun getAllOrders() : MutableList<Order> {
         val res: RealmResults<Order> = realm.query<Order>().find()
         val orders: MutableList<Order> = mutableListOf()

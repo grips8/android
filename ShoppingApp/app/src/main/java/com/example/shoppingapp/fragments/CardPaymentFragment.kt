@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.example.shoppingapp.R
 import com.example.shoppingapp.adapters.BasketAdapter
 import com.example.shoppingapp.models.CardDetails
@@ -26,7 +27,6 @@ import com.google.android.material.navigation.NavigationBarMenu
 import retrofit2.Retrofit
 
 class CardPaymentFragment : Fragment() {
-    private val adapter: BasketAdapter = BasketAdapter()
     private lateinit var mService: DBService
     private var mBound: Boolean = false
     private val connection = object : ServiceConnection {
@@ -80,7 +80,8 @@ class CardPaymentFragment : Fragment() {
         } else {    // impossible to happen?
             Toast.makeText(context, "Could not find basket", Toast.LENGTH_SHORT).show()
         }
-        parentFragmentManager.popBackStack()
+        val action = CardPaymentFragmentDirections.actionCardPaymentFragmentToBasketFragment()
+        findNavController().navigate(action)
     }
 
     override fun onDestroy() {

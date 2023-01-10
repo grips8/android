@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.PaymentOptionsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="40dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Choose payment method: "
+            style="@style/TextAppearance.AppCompat.Large"
+            android:gravity="center"
+            android:layout_marginTop="60dp"/>
+        <Button
+            android:id="@+id/cardButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/stripeButton"
+            android:layout_marginBottom="10dp"
+            android:text="credit card"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+        <Button
+            android:id="@+id/stripeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/payuButton"
+            android:layout_marginBottom="10dp"
+            android:text="stripe"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+        <Button
+            android:id="@+id/payuButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="10dp"
+            android:text="PayU (tba)"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

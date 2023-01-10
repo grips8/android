@@ -12,13 +12,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
 import com.example.shoppingapp.adapters.BasketAdapter
 import com.example.shoppingapp.services.DBService
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class BasketFragment : Fragment() {
     private val adapter: BasketAdapter = BasketAdapter()
@@ -52,16 +52,11 @@ class BasketFragment : Fragment() {
     }
 
     private fun goToCheckout() {
-        if (adapter.itemCount == 0) {
+        if (adapter.itemCount == 0)
             Toast.makeText(context, "No products in basket!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        val fragmentManager: FragmentManager = this.parentFragmentManager
-
-        fragmentManager.commit {
-            replace(R.id.nav_fragment_container, CardPaymentFragment())
-            setReorderingAllowed(true)
-            addToBackStack(null)
+        else {
+            val action = BasketFragmentDirections.actionBasketFragmentToPaymentOptionsFragment()
+            findNavController().navigate(action)
         }
     }
 
@@ -71,6 +66,7 @@ class BasketFragment : Fragment() {
             adapter.initService(mService)
             mService.basketChanged = false
         }
+        activity?.findViewById<BottomNavigationView>(R.id.bottom_nav_view)?.visibility = View.VISIBLE  // not so good
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
