@@ -38,4 +38,5 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("org.slf4j:slf4j-simple:2.0.3")
     implementation("com.google.firebase:firebase-admin:9.1.1")
+    implementation ("com.stripe:stripe-java:22.0.0")
 }

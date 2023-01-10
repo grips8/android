@@ -1,9 +1,6 @@
 package com.example
 
-import com.example.controllers.basketRoutes
-import com.example.controllers.categoriesRoutes
-import com.example.controllers.customerRoutes
-import com.example.controllers.ordersRoutes
+import com.example.controllers.*
 import com.example.models.*
 import io.ktor.server.application.*
 import com.example.plugins.*
@@ -74,4 +71,5 @@ fun Application.module() {
     customerRoutes()
     basketRoutes()
     ordersRoutes()
+    stripeOrdersRoutes()
 }

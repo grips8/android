@@ -4,6 +4,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/resources/service-account.json
+src/main/kotlin/com/example/KEYHOLDER.kt
 
 ### STS ###
 .apt_generated
