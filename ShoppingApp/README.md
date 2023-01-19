@@ -17,6 +17,7 @@
 * Zadanie nr 9: 
   - 06.01.2023 - platnosc i mockowanie + model platnosci + lista zamowien w tabie user (bez wyswietlania zawartosci poszczegolnych zamowien) 3.5  
   - 11.01.2023 - wyswietlanie zawartosci poszczegolnych zamowien + integracja ze stripe 4.5   
-* Zadanie nr 10:  
+* Zadanie nr 10: 
+  - 19.01.2023 - 50+ asercji 3.0   
 * Zadanie nr 11:  
 
