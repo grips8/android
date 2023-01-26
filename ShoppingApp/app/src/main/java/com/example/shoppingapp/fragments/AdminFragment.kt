@@ -1,7 +1,10 @@
 package com.example.shoppingapp.fragments
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
@@ -11,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.app.NotificationCompat
 import com.example.shoppingapp.R
 import com.example.shoppingapp.models.Category
 import com.example.shoppingapp.models.Product
@@ -23,6 +27,9 @@ class AdminFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var isNothingSelected: Boolean = true
     private lateinit var categories: List<Category>
     private var categoriesNames = mutableListOf<String>()
+    private lateinit var mNotifyManager: NotificationManager
+    private val CHANNEL_ID = "new-product-notify"
+    private val NOTIFICATION_ID = 0
     private lateinit var mService: DBService
     private var mBound: Boolean = false
     private val connection = object : ServiceConnection {
@@ -49,6 +56,7 @@ class AdminFragment : Fragment(), AdapterView.OnItemSelectedListener {
         Intent(requireActivity(), DBService::class.java).also { intent ->
             requireActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
+        createNotificationChannel()
     }
 
     override fun onCreateView(
@@ -71,8 +79,9 @@ class AdminFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun submit(view: View) {
+        val pName = view.findViewById<EditText>(R.id.adminNameInput).text.toString()
         Product().apply {
-            name = view.findViewById<EditText>(R.id.adminNameInput).text.toString()
+            name = pName
             price = view.findViewById<EditText>(R.id.adminPriceInput).text.toString().toDouble()
             description = view.findViewById<EditText>(R.id.adminDescriptionInput).text.toString()
             category = if (isNothingSelected) null else categories[selectedPos]
@@ -85,6 +94,30 @@ class AdminFragment : Fragment(), AdapterView.OnItemSelectedListener {
         view.findViewById<EditText>(R.id.adminPriceInput).setText("")
         view.findViewById<EditText>(R.id.adminDescriptionInput).setText("")
         Toast.makeText(context, "Successfully added product", Toast.LENGTH_SHORT).show()
+        val notifyBuilder = getNotificationBuilder(pName)
+        mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
+    }
+
+    private fun createNotificationChannel() {
+        val name = getString(R.string.channel_name)
+        val descriptionText = getString(R.string.channel_description)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+            enableLights(true)
+            enableVibration(true)
+        }
+        // Register the channel with the system
+        mNotifyManager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        mNotifyManager.createNotificationChannel(channel)
+    }
+
+    private fun getNotificationBuilder(product_name: String): NotificationCompat.Builder {
+        return NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+            .setContentTitle("New product in the store!")
+            .setContentText("$product_name has been added!!")
+            .setSmallIcon(R.drawable.basket)
+            .setAutoCancel(true)
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
