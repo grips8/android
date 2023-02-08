@@ -1,5 +1,7 @@
 package com.example.shoppingapp.fragments
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -10,6 +12,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.NotificationCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.R
@@ -21,6 +24,9 @@ import com.example.shoppingapp.services.DBService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ProductsListFragment : Fragment(), ProductRecyclerRowInterface {
+    private val CHANNEL_ID = "important-notif"
+    private val NOTIFICATION_ID = 1
+    private lateinit var mNotifyManager: NotificationManager
     private val adapter: ProductAdapter = ProductAdapter(this)
     private lateinit var mService: DBService
     private var mBound: Boolean = false
@@ -33,6 +39,8 @@ class ProductsListFragment : Fragment(), ProductRecyclerRowInterface {
             adapter.initService(mService)
             if (mService.isUserAllowed())
                 enableAdmin()
+            val notifyBuilder = getNotificationBuilder(35)
+            mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -42,6 +50,7 @@ class ProductsListFragment : Fragment(), ProductRecyclerRowInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNotificationChannel()
         Intent(requireActivity(), DBService::class.java).also { intent ->
             requireActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
@@ -80,6 +89,29 @@ class ProductsListFragment : Fragment(), ProductRecyclerRowInterface {
         activity?.findViewById<BottomNavigationView>(R.id.bottom_nav_view)?.menu?.let {
             it.findItem(R.id.adminFragment)?.isVisible = true
         }
+    }
+
+    private fun createNotificationChannel() {
+        val name = getString(R.string.important_channel_name)
+        val descriptionText = getString(R.string.important_channel_description)
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+            enableLights(true)
+            enableVibration(true)
+        }
+        // Register the channel with the system
+        mNotifyManager = requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        mNotifyManager.createNotificationChannel(channel)
+    }
+
+    private fun getNotificationBuilder(discount: Int): NotificationCompat.Builder {
+        return NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+            .setContentTitle("Promotion in the store!")
+            .setContentText("Discounts up to $discount! Valid this week only!")
+            .setSmallIcon(R.drawable.basket)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
     }
 
     override fun onDestroy() {

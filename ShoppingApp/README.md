@@ -21,4 +21,5 @@
   - 19.01.2023 - 50+ asercji 3.0   
 * Zadanie nr 11:  
   - 26.01.2023 - notyifkacja przy dodaniu nowego produktu do listy produktow 3.0  
+  - 08.02.2023 - istotna notyfikacja, badge, reply notification, notyfikacja z odpowiedzia od serwera 5.0   
 

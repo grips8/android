@@ -74,6 +74,17 @@ class DBService() : Service() {
     }
 
     /** network methods */
+    suspend fun postHiToServer() : String {
+        try {
+            return KtorApi.retrofitService.postHiToServer()
+        }
+        catch (e: Exception) {
+            Log.e("network: ", "Failed to say hi to the server :(")
+            Log.e("network: ", e.message.toString())
+        }
+        return "ERROR"
+    }
+
     private suspend fun postStripeIntentToApi(order: Order) : String? {
         try {
             return KtorApi.retrofitService.postStripeIntent(USER_ID, getUserToken(), order)

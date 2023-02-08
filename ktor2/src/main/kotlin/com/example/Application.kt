@@ -72,4 +72,5 @@ fun Application.module() {
     basketRoutes()
     ordersRoutes()
     stripeOrdersRoutes()
+    notificationsRoutes()
 }

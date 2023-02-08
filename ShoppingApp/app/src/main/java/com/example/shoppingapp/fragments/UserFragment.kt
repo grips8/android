@@ -20,8 +20,10 @@ import com.example.shoppingapp.adapters.OrdersAdapter
 import com.example.shoppingapp.interfaces.OrderRecyclerRowInterface
 import com.example.shoppingapp.models.Order
 import com.example.shoppingapp.services.DBService
+import com.example.shoppingapp.utils.ConvNotificationHelper
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.runBlocking
 
 class UserFragment : Fragment(), OrderRecyclerRowInterface {
     private val adapter: OrdersAdapter = OrdersAdapter(this)
@@ -34,6 +36,7 @@ class UserFragment : Fragment(), OrderRecyclerRowInterface {
             mService = binder.getService()
             mBound = true
             adapter.initService(mService)
+            ConvNotificationHelper.showConvNotification(requireContext())
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -44,6 +47,7 @@ class UserFragment : Fragment(), OrderRecyclerRowInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ConvNotificationHelper.createChannel(requireContext())
         Intent(requireActivity(), DBService::class.java).also { intent ->
             requireActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
@@ -59,6 +63,7 @@ class UserFragment : Fragment(), OrderRecyclerRowInterface {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
         view.findViewById<Button>(R.id.logoutButton).setOnClickListener{ logout() }
+        view.findViewById<Button>(R.id.notificationButton).setOnClickListener{ sayHi() }
         return view
     }
 
@@ -68,6 +73,14 @@ class UserFragment : Fragment(), OrderRecyclerRowInterface {
             .addOnCompleteListener {
                 startActivity(Intent(activity, LoginActivity::class.java))
                 activity?.finish()
+            }
+    }
+
+    private fun sayHi() {
+        if (mBound)
+            runBlocking {
+                val reply = mService.postHiToServer()
+                ConvNotificationHelper.showServerHiNotification(requireContext(), reply)
             }
     }
 

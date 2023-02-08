@@ -40,6 +40,8 @@ interface KtorApiService {
     suspend fun getOrders(@Path("user_id") uid: String, @Header("firebaseIDToken") firebaseIDToken: String) : List<JsonOrder>
     @POST("stripeOrders/{user_id}/create-payment-intent")
     suspend fun postStripeIntent(@Path("user_id") uid: String, @Header("firebaseIDToken") firebaseIDToken: String, @Body order: Order) : String
+    @POST("notifications/say-hi")
+    suspend fun postHiToServer() : String
 }
 
 object KtorApi {
