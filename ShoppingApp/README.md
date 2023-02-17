@@ -18,7 +18,8 @@
   - 06.01.2023 - platnosc i mockowanie + model platnosci + lista zamowien w tabie user (bez wyswietlania zawartosci poszczegolnych zamowien) 3.5  
   - 11.01.2023 - wyswietlanie zawartosci poszczegolnych zamowien + integracja ze stripe 4.5   
 * Zadanie nr 10: 
-  - 19.01.2023 - 50+ asercji 3.0   
+  - 19.01.2023 - 50+ asercji 3.0  
+  - 17.02.2023 - unit testy, mocki, fixturki i browserstack 5.0  
 * Zadanie nr 11:  
   - 26.01.2023 - notyifkacja przy dodaniu nowego produktu do listy produktow 3.0  
   - 08.02.2023 - istotna notyfikacja, badge, reply notification, notyfikacja z odpowiedzia od serwera 5.0   
