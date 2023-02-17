@@ -1,3 +1,5 @@
 package com.example.shoppingapp.models
 
-data class CardOrder(val order: Order, val cardDetails: CardDetails)
+import com.example.shoppingapp.utils.JsonOrder
+
+data class CardOrder(val order: JsonOrder, val cardDetails: CardDetails)
